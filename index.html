@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Team Progress Wall — Stealth Accountability Leadership</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --green: #4ade80;
+      --yellow: #facc15;
+      --red: #f87171;
+      --blue: #3b82f6;
+      --gray: #e5e7eb;
+      --dark: #1f2937;
+      --white: #ffffff;
+      --shadow: 0 4px 6px rgba(0,0,0,0.1);
+      --transition: all 0.3s ease;
+      --card-bg: #ffffff;
+      --text-color: #1f2937;
+      --body-bg: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+      --header-border: #3b82f6;
+    }
+
+    .dark-mode {
+      --green: #059669;
+      --yellow: #d97706;
+      --red: #dc2626;
+      --blue: #2563eb;
+      --gray: #374151;
+      --dark: #f3f4f6;
+      --white: #1f2937;
+      --shadow: 0 4px 6px rgba(0,0,0,0.3);
+      --card-bg: #111827;
+      --text-color: #f3f4f6;
+      --body-bg: linear-gradient(135deg, #111827, #1f2937);
+      --header-border: #2563eb;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: var(--body-bg);
+      padding: 2rem;
+      color: var(--text-color);
+      transition: var(--transition);
+    }
+
+    .wall-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      padding: 2rem;
+      transition: var(--transition);
+    }
+
+    /* HEADER */
+    .wall-header {
+      text-align: center;
+      padding: 1.5rem 0;
+      border-bottom: 3px solid var(--header-border);
+      margin-bottom: 2rem;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .header-controls {
+      position: absolute;
+      right: 0;
+      top: 1rem;
+      display: flex;
+      gap: 1rem;
+    }
+
+    .theme-toggle {
+      background: var(--blue);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .theme-toggle:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+
+    .wall-title {
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: var(--text-color);
+      letter-spacing: -0.5px;
+      margin-bottom: 0.5rem;
+      transition: var(--transition);
+    }
+
+    .wall-subtitle {
+      font-size: 1.2rem;
+      color: var(--text-color);
+      font-weight: 500;
+      opacity: 0.8;
+      transition: var(--transition);
+    }
+
+    .trophy-icon {
+      font-size: 2.5rem;
+      color: #fbbf24;
+      margin-bottom: 1rem;
+      display: inline-block;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    /* FILTER CONTROLS */
+    .filter-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .search-box {
+      position: relative;
+      flex-grow: 1;
+      max-width: 400px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.5rem;
+      border-radius: 50px;
+      border: 1px solid var(--gray);
+      background: var(--card-bg);
+      color: var(--text-color);
+      transition: var(--transition);
+    }
+
+    .search-box i {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-color);
+      opacity: 0.7;
+    }
+
+    .status-filters {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: var(--transition);
+    }
+
+    .filter-btn.active {
+      box-shadow: 0 0 0 2px var(--white), 0 0 0 4px currentColor;
+    }
+
+    .filter-btn.all {
+      background: var(--blue);
+      color: white;
+    }
+
+    .filter-btn.completed {
+      background: var(--green);
+      color: #065f46;
+    }
+
+    .filter-btn.inprogress {
+      background: var(--yellow);
+      color: #78350f;
+    }
+
+    .filter-btn.blocked {
+      background: var(--red);
+      color: #991b1b;
+    }
+
+    .add-task-btn {
+      background: var(--blue);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 50px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+
+    .add-task-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    /* PROGRESS SUMMARY */
+    .progress-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .summary-card {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      text-align: center;
+      transition: var(--transition);
+    }
+
+    .summary-card h3 {
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+      color: var(--text-color);
+      opacity: 0.8;
+    }
+
+    .summary-card .number {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: var(--gray);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 1rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 1s ease;
+    }
+
+    /* TABLE STYLING */
+    .progress-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 2rem 0;
+      font-size: 1rem;
+      text-align: left;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    .progress-table th {
+      background: var(--blue);
+      color: white;
+      padding: 1rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .progress-table th:hover {
+      background: color-mix(in srgb, var(--blue) 90%, black);
+    }
+
+    .progress-table th i {
+      margin-left: 0.5rem;
+      font-size: 0.8rem;
+    }
+
+    .progress-table td {
+      padding: 1.25rem;
+      border-bottom: 1px solid var(--gray);
+      vertical-align: middle;
+      transition: var(--transition);
+    }
+
+    .progress-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .progress-table tr {
+      transition: var(--transition);
+    }
+
+    .progress-table tr:hover {
+      background-color: color-mix(in srgb, var(--blue) 5%, transparent);
+      transform: scale(1.01);
+    }
+
+    /* STATUS STYLING */
+    .status-badge {
+      padding: 0.4rem 0.8rem;
+      border-radius: 50px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .status-badge:hover {
+      transform: scale(1.05);
+    }
+
+    .status-completed {
+      background: var(--green);
+      color: #065f46;
+    }
+
+    .status-inprogress {
+      background: var(--yellow);
+      color: #78350f;
+    }
+
+    .status-blocked {
+      background: var(--red);
+      color: #991b1b;
+    }
+
+    /* AVATARS */
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--blue);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-right: 0.75rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: var(--transition);
+    }
+
+    .member-cell {
+      display: flex;
+      align-items: center;
+    }
+
+    /* WIN BADGES */
+    .win-badge {
+      background: linear-gradient(45deg, #fbbf24, #f59e0b);
+      color: white;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      margin-left: 0.5rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+
+    /* ACTION BUTTONS */
+    .action-buttons {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .action-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-color);
+      opacity: 0.7;
+      transition: var(--transition);
+      font-size: 1rem;
+    }
+
+    .action-btn:hover {
+      opacity: 1;
+      transform: scale(1.2);
+    }
+
+    /* SPOTLIGHT SECTION */
+    .spotlight-section {
+      background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin: 2rem 0;
+      text-align: center;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+    }
+
+    .spotlight-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1e40af;
+      margin-bottom: 1rem;
+    }
+
+    .spotlight-member {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #1e3a8a;
+    }
+
+    .spotlight-reason {
+      font-style: italic;
+      color: #374151;
+      margin-top: 0.5rem;
+    }
+
+    /* LEADERBOARD */
+    .leaderboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+
+    .leader-card {
+      background: var(--card-bg);
+      padding: 1.25rem;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      border: 2px solid transparent;
+      transition: var(--transition);
+    }
+
+    .leader-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--blue);
+    }
+
+    .rank {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--blue);
+      margin-bottom: 0.5rem;
+    }
+
+    .leader-name {
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: var(--text-color);
+    }
+
+    .tasks-completed {
+      font-size: 0.9rem;
+      color: #6b7280;
+      margin-top: 0.25rem;
+    }
+
+    /* SHOUTOUTS */
+    .shoutouts {
+      background: color-mix(in srgb, var(--blue) 5%, transparent);
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin: 2rem 0;
+      transition: var(--transition);
+    }
+
+    .shoutout-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--text-color);
+    }
+
+    .shoutout-item {
+      background: var(--card-bg);
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 0.75rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      position: relative;
+      padding-left: 2.5rem;
+      transition: var(--transition);
+    }
+
+    .shoutout-item:before {
+      content: "💬";
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.2rem;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem;
+      }
+
+      .wall-title { 
+        font-size: 2rem; 
+        margin-top: 1rem;
+      }
+      
+      .header-controls {
+        position: static;
+        margin-bottom: 1rem;
+      }
+      
+      .progress-table {
+        display: block;
+        overflow-x: auto;
+      }
+      
+      .progress-table th,
+      .progress-table td {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+      }
+      
+      .leaderboard {
+        grid-template-columns: 1fr;
+      }
+      
+      .filter-controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .search-box {
+        max-width: 100%;
+      }
+    }
+
+    /* INSTRUCTION PANEL */
+    .instructions-panel {
+      background: color-mix(in srgb, var(--blue) 5%, transparent);
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-top: 2rem;
+      border-left: 4px solid var(--blue);
+      transition: var(--transition);
+    }
+
+    .instructions-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--text-color);
+    }
+
+    .instructions-list {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .instructions-list li {
+      padding: 0.5rem 0;
+      padding-left: 1.5rem;
+      position: relative;
+    }
+
+    .instructions-list li:before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: var(--blue);
+      font-weight: bold;
+    }
+
+    /* FOOTER NOTE */
+    .footer-note {
+      text-align: center;
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px dashed #d1d5db;
+      color: var(--text-color);
+      opacity: 0.7;
+      font-size: 0.9rem;
+      transition: var(--transition);
+    }
+
+    .motivational-quote {
+      font-style: italic;
+      color: var(--blue);
+      font-weight: 500;
+      margin: 1rem 0;
+    }
+
+    /* ADD TASK MODAL */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: var(--shadow);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-color);
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 8px;
+      border: 1px solid var(--gray);
+      background: var(--card-bg);
+      color: var(--text-color);
+    }
+
+    .form-group textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .submit-btn {
+      background: var(--blue);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: 600;
+      width: 100%;
+      margin-top: 1rem;
+      transition: var(--transition);
+    }
+
+    .submit-btn:hover {
+      opacity: 0.9;
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.5s ease forwards;
+    }
+
+    @keyframes celebrate {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    .celebrate {
+      animation: celebrate 0.5s ease;
+    }
+
+    .completed-row {
+      background: color-mix(in srgb, var(--green) 10%, transparent) !important;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="wall-container">
+
+    <!-- HEADER -->
+    <div class="wall-header">
+      <div class="header-controls">
+        <button class="theme-toggle" id="themeToggle">
+          <i class="fas fa-moon"></i> Dark Mode
+        </button>
+      </div>
+      <div class="trophy-icon">🏆</div>
+      <h1 class="wall-title">Team Progress Wall</h1>
+      <p class="wall-subtitle">Q3 Project Launch – Aug–Sep 2025 | Stealth Accountability Leadership</p>
+      <p class="motivational-quote">"What gets measured, gets managed — but what gets celebrated, gets repeated."</p>
+    </div>
+
+    <!-- FILTER CONTROLS -->
+    <div class="filter-controls">
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" placeholder="Search team members or tasks...">
+      </div>
+      
+      <div class="status-filters">
+        <button class="filter-btn all active" data-status="all">
+          <i class="fas fa-layer-group"></i> All
+        </button>
+        <button class="filter-btn completed" data-status="completed">
+          <i class="fas fa-check-circle"></i> Completed
+        </button>
+        <button class="filter-btn inprogress" data-status="inprogress">
+          <i class="fas fa-spinner"></i> In Progress
+        </button>
+        <button class="filter-btn blocked" data-status="blocked">
+          <i class="fas fa-exclamation-circle"></i> Blocked
+        </button>
+      </div>
+      
+      <button class="add-task-btn" id="addTaskBtn">
+        <i class="fas fa-plus"></i> Add Task
+      </button>
+    </div>
+
+    <!-- PROGRESS SUMMARY -->
+    <div class="progress-summary">
+      <div class="summary-card">
+        <h3>Total Tasks</h3>
+        <div class="number">12</div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 100%; background: var(--blue);"></div>
+        </div>
+      </div>
+      <div class="summary-card">
+        <h3>Completed</h3>
+        <div class="number">5</div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 42%; background: var(--green);"></div>
+        </div>
+      </div>
+      <div class="summary-card">
+        <h3>In Progress</h3>
+        <div class="number">5</div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 42%; background: var(--yellow);"></div>
+        </div>
+      </div>
+      <div class="summary-card">
+        <h3>Blocked</h3>
+        <div class="number">2</div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 16%; background: var(--red);"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROGRESS TABLE -->
+    <table class="progress-table">
+      <thead>
+        <tr>
+          <th>Team Member <i class="fas fa-sort"></i></th>
+          <th>Task <i class="fas fa-sort"></i></th>
+          <th>Status <i class="fas fa-sort"></i></th>
+          <th>Last Update / Blocker</th>
+          <th>Next Step / ETA</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="completed-row">
+          <td class="member-cell">
+            <div class="avatar">A</div> Alice (Dev)
+            <span class="win-badge">🌟 MVP</span>
+          </td>
+          <td>Feature A</td>
+          <td><span class="status-badge status-completed">✅ Completed</span></td>
+          <td>—</td>
+          <td>—</td>
+          <td class="action-buttons">
+            <button class="action-btn"><i class="fas fa-edit"></i></button>
+            <button class="action-btn"><i class="fas fa-trash"></i></button>
+          </td>
+        </tr>
+        <tr>
+          <td class="member-cell">
+            <div class="avatar">B</div> Bob (Dev)
+          </td>
+          <td>Feature B</td>
+          <td><span class="status-badge status-inprogress">⚠️ In Progress</span></td>
+          <td>Waiting on API</td>
+          <td>End of day Friday</td>
+          <td class="action-buttons">
+            <button class="action-btn"><i class="fas fa-edit"></i></button>
+            <button class="action-btn"><i class="fas fa-trash"></i></button>
+          </td>
+        </tr>
+        <tr>
+          <td class="member-cell">
+            <div class="avatar">C</div> Carol (Design)
+            <span class="win-badge">🎯 Stretch</span>
+          </td>
+          <td>Feature C</td>
+          <td><span class="status-badge status-blocked">❌ Blocked</span></td>
+          <td>Needs design review</td>
+          <td>Tomorrow</td>
+          <td class="action-buttons">
+            <button class="action-btn"><i class="fas fa-edit"></i></button>
+            <button class="action-btn"><i class="fas fa-trash"></i></button>
+          </td>
+        </tr>
+        <tr>
+          <td class="member-cell">
+            <div class="avatar">D</div> Dave (QA)
+          </td>
+          <td>Testing Suite</td>
+          <td><span class="status-badge status-inprogress">⚠️ In Progress</span></td>
+          <td>—</td>
+          <td>Complete tests by Wed</td>
+          <td class="action-buttons">
+            <button class="action-btn"><i class="fas fa-edit"></i></button>
+            <button class="action-btn"><i class="fas fa-trash"></i></button>
+          </td>
+        </tr>
+        <tr class="completed-row">
+          <td class="member-cell">
+            <div class="avatar">E</div> Eve (Docs)
+            <span class="win-badge">📚 Ace</span>
+          </td>
+          <td>Documentation</td>
+          <td><span class="status-badge status-completed">✅ Completed</span></td>
+          <td>—</td>
+          <td>—</td>
+          <td class="action-buttons">
+            <button class="action-btn"><i class="fas fa-edit"></i></button>
+            <button class="action-btn"><i class="fas fa-trash"></i></button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- SPOTLIGHT -->
+    <div class="spotlight-section">
+      <h3 class="spotlight-title">🌟 Weekly Spotlight</h3>
+      <div class="spotlight-member">Carol</div>
+      <div class="spotlight-reason">"Delivered 3 stretch UI mockups ahead of schedule — enabling dev kickoff!"</div>
+    </div>
+
+    <!-- LEADERBOARD -->
+    <h3 style="text-align: center; margin: 2rem 0 1rem; font-weight: 700; color: var(--blue);">📊 Completion Leaderboard</h3>
+    <div class="leaderboard">
+      <div class="leader-card">
+        <div class="rank">🥇 1</div>
+        <div class="leader-name">Alice</div>
+        <div class="tasks-completed">5/5 Tasks ✅</div>
+      </div>
+      <div class="leader-card">
+        <div class="rank">🥈 2</div>
+        <div class="leader-name">Eve</div>
+        <div class="tasks-completed">4/4 Tasks ✅</div>
+      </div>
+      <div class="leader-card">
+        <div class="rank">🥉 3</div>
+        <div class="leader-name">Dave</div>
+        <div class="tasks-completed">3/5 Tasks</div>
+      </div>
+    </div>
+
+    <!-- SHOUTOUTS -->
+    <div class="shoutouts">
+      <h3 class="shoutout-title">📣 Team Shoutouts</h3>
+      <div class="shoutout-item">Bob helped Carol unblock her design review by prepping API stubs — collaboration win!</div>
+      <div class="shoutout-item">Eve shared her doc template with the whole team — saved 10+ hours!</div>
+      <div class="shoutout-item">Dave found a critical edge case in testing — prevented a production fire.</div>
+    </div>
+
+    <!-- INSTRUCTIONS -->
+    <div class="instructions-panel">
+      <h3 class="instructions-title">⚙️ How to Use This Wall</h3>
+      <ul class="instructions-list">
+        <li><strong>Self-update only</strong> — No micromanagement. You own your row.</li>
+        <li><strong>Celebrate small wins</strong> — Even "✅" triggers dopamine + social proof.</li>
+        <li><strong>Update daily (digital) or weekly (physical)</strong> — Sync during stand-ups.</li>
+        <li><strong>Rotate wall ownership</strong> — New maintainer each week builds shared responsibility.</li>
+        <li><strong>Review blockers publicly</strong> — Team swarm solves faster than solo struggle.</li>
+        <li><strong>Drag, drop, done</strong> — On digital boards, move your card. On physical, move your sticky.</li>
+      </ul>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer-note">
+      Built for autonomy, visibility, and momentum — not surveillance.<br>
+      Stealth Accountability = Peer Motivation + Public Progress + Private Ownership
+    </div>
+
+  </div>
+
+  <!-- ADD TASK MODAL -->
+  <div class="modal" id="addTaskModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Add New Task</h2>
+        <button class="close-modal">&times;</button>
+      </div>
+      <form id="taskForm">
+        <div class="form-group">
+          <label for="member">Team Member</label>
+          <select id="member" required>
+            <option value="">Select a team member</option>
+            <option value="Alice">Alice (Dev)</option>
+            <option value="Bob">Bob (Dev)</option>
+            <option value="Carol">Carol (Design)</option>
+            <option value="Dave">Dave (QA)</option>
+            <option value="Eve">Eve (Docs)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="task">Task Description</label>
+          <input type="text" id="task" placeholder="Enter task description" required>
+        </div>
+        <div class="form-group">
+          <label for="status">Status</label>
+          <select id="status" required>
+            <option value="">Select status</option>
+            <option value="completed">Completed</option>
+            <option value="inprogress">In Progress</option>
+            <option value="blocked">Blocked</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="update">Last Update / Blocker</label>
+          <textarea id="update" placeholder="Enter update or blocker details"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="eta">Next Step / ETA</label>
+          <input type="text" id="eta" placeholder="Enter next step or ETA">
+        </div>
+        <button type="submit" class="submit-btn">Add Task</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Theme Toggle
+    const themeToggle = document.getElementById('themeToggle');
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      if (document.body.classList.contains('dark-mode')) {
+        themeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+      } else {
+        themeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+      }
+    });
+
+    // Filter Functionality
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const tableRows = document.querySelectorAll('.progress-table tbody tr');
+    const searchInput = document.getElementById('searchInput');
+
+    filterButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const status = button.getAttribute('data-status');
+        
+        // Update active button
+        filterButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        
+        // Filter rows
+        tableRows.forEach(row => {
+          const rowStatus = row.querySelector('.status-badge').classList[1];
+          const statusMatch = status === 'all' || rowStatus.includes(status);
+          const searchText = searchInput.value.toLowerCase();
+          const memberText = row.querySelector('.member-cell').textContent.toLowerCase();
+          const taskText = row.cells[1].textContent.toLowerCase();
+          const searchMatch = memberText.includes(searchText) || taskText.includes(searchText);
+          
+          if (statusMatch && searchMatch) {
+            row.style.display = '';
+            row.classList.add('fade-in');
+          } else {
+            row.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    // Search Functionality
+    searchInput.addEventListener('input', () => {
+      const searchText = searchInput.value.toLowerCase();
+      const activeStatus = document.querySelector('.filter-btn.active').getAttribute('data-status');
+      
+      tableRows.forEach(row => {
+        const rowStatus = row.querySelector('.status-badge').classList[1];
+        const statusMatch = activeStatus === 'all' || rowStatus.includes(activeStatus);
+        const memberText = row.querySelector('.member-cell').textContent.toLowerCase();
+        const taskText = row.cells[1].textContent.toLowerCase();
+        const searchMatch = memberText.includes(searchText) || taskText.includes(searchText);
+        
+        if (statusMatch && searchMatch) {
+          row.style.display = '';
+          row.classList.add('fade-in');
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    });
+
+    // Add Task Modal
+    const addTaskBtn = document.getElementById('addTaskBtn');
+    const modal = document.getElementById('addTaskModal');
+    const closeModal = document.querySelector('.close-modal');
+    const taskForm = document.getElementById('taskForm');
+
+    addTaskBtn.addEventListener('click', () => {
+      modal.style.display = 'flex';
+    });
+
+    closeModal.addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+
+    window.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+
+    taskForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      // Here you would typically send the data to a server
+      // For this example, we'll just close the modal
+      modal.style.display = 'none';
+      alert('Task added successfully!');
+      taskForm.reset();
+    });
+
+    // Table Sorting (basic implementation)
+    const tableHeaders = document.querySelectorAll('.progress-table th');
+    tableHeaders.forEach((header, index) => {
+      header.addEventListener('click', () => {
+        // This would be implemented based on specific sorting needs
+        console.log(`Sorting by column ${index}`);
+      });
+    });
+
+    // Status badge click to toggle status
+    const statusBadges = document.querySelectorAll('.status-badge');
+    statusBadges.forEach(badge => {
+      badge.addEventListener('click', () => {
+        const row = badge.closest('tr');
+        if (badge.classList.contains('status-completed')) {
+          badge.className = 'status-badge status-inprogress';
+          badge.innerHTML = '⚠️ In Progress';
+          row.classList.remove('completed-row');
+        } else if (badge.classList.contains('status-inprogress')) {
+          badge.className = 'status-badge status-blocked';
+          badge.innerHTML = '❌ Blocked';
+          row.classList.remove('completed-row');
+        } else {
+          badge.className = 'status-badge status-completed';
+          badge.innerHTML = '✅ Completed';
+          row.classList.add('completed-row');
+          row.classList.add('celebrate');
+          setTimeout(() => {
+            row.classList.remove('celebrate');
+          }, 500);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
